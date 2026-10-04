@@ -1,21 +1,15 @@
 PODS:
   - Flutter (1.0.0)
-  - flutter_vap_kit (0.1.0):
-    - Flutter
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
-  - flutter_vap_kit (from `.symlinks/plugins/flutter_vap_kit/ios`)
 
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
-  flutter_vap_kit:
-    :path: ".symlinks/plugins/flutter_vap_kit/ios"
 
 SPEC CHECKSUMS:
   Flutter: 71a624a5bc0c04062bf19101d501e466baf2fb47
-  flutter_vap_kit: 033f8f7367ed6aa18382a27917985d776b4f2741
 
 PODFILE CHECKSUM: 3ba3a73b1b12adcf321a227a745625fe0888cc82
 

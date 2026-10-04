@@ -2,7 +2,7 @@ name: flutter_vap_kit
 description: >-
   Play Tencent VAP transparent (alpha-channel) MP4 animations with one widget:
   seamless looping, automatic first-frame poster, asset and network caching.
-version: 0.1.0
+version: 0.1.1
 homepage: https://github.com/zamansheikh/flutter_vap_kit
 repository: https://github.com/zamansheikh/flutter_vap_kit
 issue_tracker: https://github.com/zamansheikh/flutter_vap_kit/issues

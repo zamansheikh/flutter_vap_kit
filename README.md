@@ -13,7 +13,7 @@
 </p>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/zamansheikh/flutter_vap_kit/main/doc/preview.gif" width="320" alt="A looping rocket animation and a looping banner with a tappable button on top">
+  <img src="https://raw.githubusercontent.com/zamansheikh/flutter_vap_kit/main/doc/preview.gif" width="320" alt="An animated banner with a Go button on top, and a looping rocket">
 </p>
 
 ```dart
@@ -48,7 +48,7 @@ time goes. This package handles the parts you would otherwise write yourself:
 | **Assets copied once** | Bundled clips are extracted one time, not on every play. |
 | **Network clips cached** | Downloaded once, then played from disk. |
 | **Touches pass through** | Buttons under or over an animation keep working. |
-| **Survives backgrounding** | Looping clips resume when the app comes back. |
+| **Survives backgrounding** | Looping clips resume when the app comes back, and restart themselves if the decoder is lost. |
 | **Works on the iOS simulator** | Most VAP plugins show nothing there; this one renders. |
 | **Declarative** | Change `source`, `loop` or `fit` and the player follows. |
 
@@ -56,13 +56,13 @@ time goes. This package handles the parts you would otherwise write yourself:
 
 ```yaml
 dependencies:
-  flutter_vap_kit: ^0.1.0
+  flutter_vap_kit: ^0.1.1
 ```
 
 | | Minimum |
 |---|---|
 | Android | `minSdk 24` |
-| iOS | 12.0, CocoaPods |
+| iOS | 12.0 — Swift Package Manager or CocoaPods |
 
 No permissions, no manifest or Info.plist changes.
 
@@ -172,12 +172,12 @@ is a single `.mp4` you drop into `assets/`.
 - **Do not combine with other VAP plugins.** This package ships its own copy of
   the iOS player, so adding another plugin that brings `QGVAPlayer` produces
   duplicate classes.
-- **Swift Package Manager** is not supported yet; iOS uses CocoaPods.
 
 ## Example
 
-The [example app](example) shows a looping clip, a looping banner with a button
-on top of it, and a one-shot clip driven by a controller.
+The [example app](example) is the scene in the preview above: an animated
+banner with text and a working button laid over it, a looping rocket, and a
+one-shot effect fired from a button.
 
 ```sh
 cd example
@@ -192,4 +192,4 @@ Built on [Tencent VAP](https://github.com/Tencent/vap), which is MIT-licensed
 and stays so. The Android side
 uses Tencent's published library; the iOS side includes a copy of Tencent's
 player source with two fixes — a crash in decoder set-up, and rendering when
-frames are software-decoded — see `ios/Classes/vap/LICENSE.txt`.
+frames are software-decoded — see `ios/flutter_vap_kit/Sources/flutter_vap_kit_player/LICENSE.txt`.

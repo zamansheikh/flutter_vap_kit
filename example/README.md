@@ -1,7 +1,8 @@
 # flutter_vap_kit example
 
-Three players: a looping clip, a looping banner with a tappable button on top
-of it, and a one-shot clip driven by a `VapController`.
+A small live-room scene built from three players: an animated banner with text
+and a working button on top of it, a looping rocket, and a one-shot effect
+fired from a button.
 
 ```sh
 flutter run

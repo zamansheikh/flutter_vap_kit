@@ -194,6 +194,10 @@ class _VapPlayerState extends State<VapPlayer>
   Timer? _startTimer;
   int _attempts = 0;
 
+  /// Automatic restarts of a looping clip since it was last asked to play.
+  int _recoveries = 0;
+  static const int _maxRecoveries = 3;
+
   /// A looping clip was on screen when the app went to the background.
   bool _resumeOnForeground = false;
 
@@ -288,7 +292,12 @@ class _VapPlayerState extends State<VapPlayer>
   // ── Playback ────────────────────────────────────────────────────────────
 
   @override
-  Future<void> play([VapSource? source]) async {
+  Future<void> play([VapSource? source]) {
+    _recoveries = 0;
+    return _restart(source);
+  }
+
+  Future<void> _restart([VapSource? source]) async {
     if (!mounted) return;
     if (source != null && source != _source) {
       _override = source;
@@ -373,16 +382,38 @@ class _VapPlayerState extends State<VapPlayer>
         _setState(VapPlaybackState.playing);
         widget.onStart?.call();
       case 'onComplete':
+        if (widget.loop) {
+          // A looping clip is not supposed to end. If the native player
+          // stops anyway, start it again rather than leave an empty box.
+          _recoverLoop();
+          return;
+        }
         _setState(VapPlaybackState.completed);
         widget.onComplete?.call();
       case 'onError':
-        _fail(
-          PlatformException(
-            code: '${args['code']}',
-            message: args['message'] as String?,
-          ),
+        final error = PlatformException(
+          code: '${args['code']}',
+          message: args['message'] as String?,
         );
+        // A decoder can be lost while running (the system reclaims it, the
+        // surface goes away). A looping clip gets a few chances to come back
+        // before the error is reported.
+        if (widget.loop &&
+            _state == VapPlaybackState.playing &&
+            _recoveries < _maxRecoveries) {
+          _recoverLoop();
+          return;
+        }
+        _fail(error);
     }
+  }
+
+  void _recoverLoop() {
+    _recoveries++;
+    final ticket = _ticket;
+    Future<void>.delayed(const Duration(milliseconds: 300), () {
+      if (mounted && ticket == _ticket) _restart();
+    });
   }
 
   void _fail(Object error) {

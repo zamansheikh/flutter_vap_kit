@@ -1,3 +1,11 @@
+## 0.1.1
+
+- iOS: Swift Package Manager support (CocoaPods still works).
+- A looping clip now restarts by itself if the player stops or loses its
+  decoder, instead of leaving an empty box.
+- New example app and preview: an animated banner with widgets on top of it,
+  a looping clip and a one-shot effect.
+
 ## 0.1.0
 
 First release.

@@ -2,6 +2,12 @@ import AVFoundation
 import Flutter
 import UIKit
 
+// Under Swift Package Manager the player is its own module; under CocoaPods
+// it is part of this one.
+#if canImport(flutter_vap_kit_player)
+  import flutter_vap_kit_player
+#endif
+
 /// Registers the VAP platform view and a small utility channel:
 ///
 ///  - `resolveAsset` turns a Flutter asset key into a file path the player
