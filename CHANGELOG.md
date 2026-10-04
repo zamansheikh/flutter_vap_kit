@@ -1,3 +1,8 @@
+## 0.1.2
+
+- `onFrame`: reports the index of each video frame as it is drawn, so other
+  widgets can follow the clip (for example a picture inside a moving frame).
+
 ## 0.1.1
 
 - iOS: Swift Package Manager support (CocoaPods still works).

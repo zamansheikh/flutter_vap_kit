@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'flutter_vap_kit'
-  s.version          = '0.1.1'
+  s.version          = '0.1.2'
   s.summary          = 'Play Tencent VAP transparent-video animations in Flutter.'
   s.description      = <<-DESC
 A Flutter plugin that plays Tencent VAP (alpha-channel MP4) animations with a

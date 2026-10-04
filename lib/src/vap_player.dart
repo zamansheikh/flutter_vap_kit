@@ -38,6 +38,7 @@ class VapPlayer extends StatefulWidget {
     this.onStart,
     this.onComplete,
     this.onError,
+    this.onFrame,
   }) : assert(repeat >= 1, 'repeat must be at least 1');
 
   /// Plays a clip bundled with the app.
@@ -55,6 +56,7 @@ class VapPlayer extends StatefulWidget {
     VoidCallback? onStart,
     VoidCallback? onComplete,
     ValueChanged<Object>? onError,
+    ValueChanged<int>? onFrame,
   }) : this(
          key: key,
          source: VapSource.asset(name, package: package),
@@ -68,6 +70,7 @@ class VapPlayer extends StatefulWidget {
          onStart: onStart,
          onComplete: onComplete,
          onError: onError,
+         onFrame: onFrame,
        );
 
   /// Plays a clip stored on the device.
@@ -84,6 +87,7 @@ class VapPlayer extends StatefulWidget {
     VoidCallback? onStart,
     VoidCallback? onComplete,
     ValueChanged<Object>? onError,
+    ValueChanged<int>? onFrame,
   }) : this(
          key: key,
          source: VapSource.file(path),
@@ -97,6 +101,7 @@ class VapPlayer extends StatefulWidget {
          onStart: onStart,
          onComplete: onComplete,
          onError: onError,
+         onFrame: onFrame,
        );
 
   /// Plays a clip from the network. It is downloaded once and kept on disk.
@@ -114,6 +119,7 @@ class VapPlayer extends StatefulWidget {
     VoidCallback? onStart,
     VoidCallback? onComplete,
     ValueChanged<Object>? onError,
+    ValueChanged<int>? onFrame,
   }) : this(
          key: key,
          source: VapSource.network(url, headers: headers),
@@ -127,6 +133,7 @@ class VapPlayer extends StatefulWidget {
          onStart: onStart,
          onComplete: onComplete,
          onError: onError,
+         onFrame: onFrame,
        );
 
   /// The clip to play. Changing it switches clips.
@@ -166,6 +173,14 @@ class VapPlayer extends StatefulWidget {
 
   /// The clip could not be played.
   final ValueChanged<Object>? onError;
+
+  /// Called with the index of each video frame as it is drawn (0-based, and
+  /// starting again from 0 on every loop).
+  ///
+  /// Use it to keep your own widgets in step with the clip — for example a
+  /// profile picture that has to follow a moving frame in the artwork. Leave
+  /// it null when you do not need it; frames are then not reported at all.
+  final ValueChanged<int>? onFrame;
 
   @override
   State<VapPlayer> createState() => _VapPlayerState();
@@ -341,6 +356,7 @@ class _VapPlayerState extends State<VapPlayer>
         _ => 'contain',
       },
       'ticket': ticket,
+      'frames': widget.onFrame != null,
     });
     if (!mounted || ticket != _ticket) return;
 
@@ -381,6 +397,8 @@ class _VapPlayerState extends State<VapPlayer>
         _startTimer?.cancel();
         _setState(VapPlaybackState.playing);
         widget.onStart?.call();
+      case 'onFrame':
+        widget.onFrame?.call((args['frame'] as num).toInt());
       case 'onComplete':
         if (widget.loop) {
           // A looping clip is not supposed to end. If the native player

@@ -56,7 +56,7 @@ time goes. This package handles the parts you would otherwise write yourself:
 
 ```yaml
 dependencies:
-  flutter_vap_kit: ^0.1.1
+  flutter_vap_kit: ^0.1.2
 ```
 
 | | Minimum |
@@ -124,6 +124,22 @@ controller.stop();
 `controller.state` is `idle`, `loading`, `playing`, `completed` or `error`. The
 controller is a `Listenable`, so it works with `ListenableBuilder`.
 
+### Keep a widget in step with the clip
+
+Some clips have a moving slot for a profile picture or a name. `onFrame` tells
+you which video frame is on screen, so your widget can follow it:
+
+```dart
+VapPlayer.asset(
+  'assets/winner.mp4',
+  onFrame: (frame) => position.value = slotPositions[frame],
+)
+```
+
+The frame reaches the screen slightly after it is reported (a frame or two,
+depending on the device), so trail the reported index a little if the match
+has to be exact.
+
 ### Warm clips up before they are needed
 
 ```dart
@@ -148,6 +164,7 @@ shows it later starts at once. Good for the gifts on a gift panel.
 | `placeholder` | — | Your own widget for that moment instead. |
 | `controller` | — | A `VapController`, when you need one. |
 | `onStart` / `onComplete` / `onError` | — | Playback callbacks. |
+| `onFrame` | — | Index of each video frame as it is drawn, to keep your own widgets in step with the clip. |
 
 ### `VapKit`
 

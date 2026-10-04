@@ -124,6 +124,9 @@ private class VapKitView: NSObject, FlutterPlatformView, VAPWrapViewDelegate {
   private var ticket = 0
   private var loopsForever = false
 
+  /// Whether Dart asked to be told about every drawn frame.
+  private var reportFrames = false
+
   init(frame: CGRect, viewId: Int64, messenger: FlutterBinaryMessenger) {
     container = VapContainerView(frame: frame)
     container.backgroundColor = .clear
@@ -158,6 +161,7 @@ private class VapKitView: NSObject, FlutterPlatformView, VAPWrapViewDelegate {
         loop: args["loop"] as? Int ?? 1,
         fit: args["fit"] as? String ?? "contain",
         id: args["ticket"] as? Int ?? 0)
+      reportFrames = args["frames"] as? Bool ?? false
       result(nil)
     case "stop":
       ticket = 0
@@ -256,6 +260,16 @@ private class VapKitView: NSObject, FlutterPlatformView, VAPWrapViewDelegate {
     DispatchQueue.main.async { [weak self] in
       guard let self = self, self.ticket != 0 else { return }
       self.channel.invokeMethod("onStart", arguments: ["ticket": self.ticket])
+    }
+  }
+
+  func vapWrap_viewDidPlayMP4AtFrame(_ frame: QGMP4AnimatedImageFrame) {
+    guard reportFrames else { return }
+    let index = frame.frameIndex
+    DispatchQueue.main.async { [weak self] in
+      guard let self = self, self.ticket != 0 else { return }
+      self.channel.invokeMethod(
+        "onFrame", arguments: ["ticket": self.ticket, "frame": index])
     }
   }
 

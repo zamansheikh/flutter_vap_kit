@@ -19,9 +19,10 @@ import java.io.File
  * One VAP player surface.
  *
  * Channel `flutter_vap_kit/view_<id>`:
- *   play { path, loop, fit }  — loop < 0 means "forever"
+ *   play { path, loop, fit, frames }  — loop < 0 means "forever"
  *   stop
- * and back to Dart: onStart, onComplete, onError { code, message }.
+ * and back to Dart: onStart, onFrame { frame }, onComplete,
+ * onError { code, message }.
  *
  * Every play request carries a ticket. Callbacks from a clip that has since
  * been replaced or stopped are dropped here, so Dart never sees a stale
@@ -47,6 +48,10 @@ internal class VapKitView(
     /** Ticket of the clip currently playing; 0 when nothing is. */
     private var ticket = 0
 
+    /** Whether Dart asked to be told about every drawn frame. */
+    @Volatile
+    private var reportFrames = false
+
     /** A play request waiting for the previous clip to finish tearing down. */
     private var pendingStart: Runnable? = null
 
@@ -64,6 +69,7 @@ internal class VapKitView(
                 val loop = call.argument<Int>("loop") ?: 1
                 val fit = call.argument<String>("fit") ?: "contain"
                 val id = call.argument<Int>("ticket") ?: 0
+                reportFrames = call.argument<Boolean>("frames") ?: false
                 if (path == null) {
                     result.error("bad_args", "path is required", null)
                     return
@@ -144,7 +150,16 @@ internal class VapKitView(
         main.post { if (!disposed && id == ticket) channel.invokeMethod("onStart", mapOf("ticket" to id)) }
     }
 
-    override fun onVideoRender(frameIndex: Int, config: AnimConfig?) {}
+    override fun onVideoRender(frameIndex: Int, config: AnimConfig?) {
+        if (!reportFrames) return
+        val id = ticket
+        if (id == 0) return
+        main.post {
+            if (!disposed && id == ticket) {
+                channel.invokeMethod("onFrame", mapOf("ticket" to id, "frame" to frameIndex))
+            }
+        }
+    }
 
     override fun onVideoComplete() {
         val id = ticket
